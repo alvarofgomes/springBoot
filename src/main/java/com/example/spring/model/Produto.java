@@ -1,13 +1,22 @@
 package com.example.spring.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "produtos")
 public class Produto {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String nome;
+
+    @Column(nullable = false)
     private Double preco;
 
-    public Produto() {
-    }
+    public Produto() {}
 
     public Produto(Long id, String nome, Double preco) {
         this.id = id;
