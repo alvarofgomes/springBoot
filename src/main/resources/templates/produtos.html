@@ -3,11 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <title>Produtos</title>
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>Cadastro de Produtos</h1>
+
+<p th:if="${erro}" th:text="${erro}" style="color:red;"></p>
+
+<form th:action="@{/ui/produtos/buscar}" method="get" style="margin-bottom: 16px;">
+  <input name="id" type="number" placeholder="Buscar por ID" required />
+  <button type="submit">Buscar</button>
+</form>
 
 <form th:action="${formProduto != null && formProduto.id != null}
         ? @{/ui/produtos/{id}/update(id=${formProduto.id})}

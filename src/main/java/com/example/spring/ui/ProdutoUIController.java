@@ -33,6 +33,19 @@ public class ProdutoUIController {
 
         return "produtos";
     }
+    
+    @GetMapping("/buscar")
+    public String buscarPorId(@RequestParam Long id, Model model) {
+
+        ProdutoResponseDTO produto = service.buscarPorId(id);
+
+        model.addAttribute("produtos", List.of(produto));
+
+        model.addAttribute("formProduto", null);
+
+        return "produtos";
+    }
+
 
     @PostMapping
     public String adicionar(@RequestParam String nome, @RequestParam Double preco) {
