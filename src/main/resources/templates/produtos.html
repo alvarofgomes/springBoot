@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <title>Produtos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Cadastro de Produtos</h1>
+
+<form th:action="${formProduto != null && formProduto.id != null}
+        ? @{/ui/produtos/{id}/update(id=${formProduto.id})}
+        : @{/ui/produtos}"
+      method="post">
+
+  <input name="nome"
+         placeholder="Nome"
+         required
+         th:value="${formProduto != null ? formProduto.nome : ''}" />
+
+  <input name="preco"
+         placeholder="Preço"
+         type="number"
+         step="0.01"
+         required
+         th:value="${formProduto != null ? formProduto.preco : ''}" />
+
+  <button type="submit"
+          th:text="${formProduto != null && formProduto.id != null ? 'Atualizar' : 'Adicionar'}"></button>
+
+  <a th:if="${formProduto != null && formProduto.id != null}" th:href="@{/ui/produtos}">
+    <button type="button" class="secondary">Cancelar</button>
+  </a>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th><th>Nome</th><th>Preço</th><th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="p : ${produtos}">
+      <td th:text="${p.id}"></td>
+      <td th:text="${p.nome}"></td>
+      <td th:text="${p.preco}"></td>
+      <td>
+        <div class="actions">
+          <a th:href="@{/ui/produtos(editId=${p.id})}">
+            <button type="button">Editar</button>
+          </a>
+
+          <form th:action="@{/ui/produtos/{id}/delete(id=${p.id})}" method="post" style="display:inline;">
+            <button type="submit">Excluir</button>
+          </form>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

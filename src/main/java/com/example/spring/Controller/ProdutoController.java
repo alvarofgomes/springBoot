@@ -2,9 +2,11 @@ package com.example.spring.Controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.spring.model.Produto;
+import com.example.spring.dto.ProdutoRequestDTO;
+import com.example.spring.dto.ProdutoResponseDTO;
 import com.example.spring.service.ProdutoService;
 
 @RestController
@@ -17,39 +19,30 @@ public class ProdutoController {
         this.service = service;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "API de produtos rodando com Spring Boot + JPA + PostgreSQL";
-    }
-
     @GetMapping
-    public List<Produto> listarProdutos() {
+    public List<ProdutoResponseDTO> listar() {
         return service.listar();
     }
 
     @GetMapping("/{id}")
-    public Produto buscarPorId(@PathVariable Long id) {
+    public ProdutoResponseDTO buscarPorId(@PathVariable Long id) {
         return service.buscarPorId(id);
     }
 
     @PostMapping
-    public Produto adicionarProduto(@RequestBody Produto produto) {
-        return service.salvar(produto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProdutoResponseDTO salvar(@RequestBody ProdutoRequestDTO dto) {
+        return service.salvar(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ProdutoResponseDTO atualizar(@PathVariable Long id, @RequestBody ProdutoRequestDTO dto) {
+        return service.atualizar(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public String removerProduto(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long id) {
         service.remover(id);
-        return "Produto removido com sucesso";
     }
-    
-    @PutMapping("/{id}")
-    public Produto atualizarProduto(
-            @PathVariable Long id,
-            @RequestBody Produto produto) {
-
-        return service.atualizar(id, produto);
-    }
-
-    
 }
