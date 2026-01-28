@@ -1,4 +1,4 @@
-package com.example.spring.service;
+package com.example.spring.service.impl;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import com.example.spring.exception.ProdutoNotFoundException;
 import com.example.spring.mapper.ProdutoMapper;
 import com.example.spring.model.Produto;
 import com.example.spring.repository.ProdutoRepository;
+import com.example.spring.service.ProdutoService;
 
 @Service
 public class ProdutoServiceImpl implements ProdutoService {

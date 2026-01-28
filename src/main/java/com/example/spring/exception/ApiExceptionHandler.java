@@ -5,7 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@RestControllerAdvice(basePackages = "com.example.spring.Controller")
+@RestControllerAdvice(basePackages = "com.example.spring.controller")
 public class ApiExceptionHandler {
 
     @ExceptionHandler(ProdutoNotFoundException.class)
