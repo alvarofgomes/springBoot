@@ -16,4 +16,16 @@ public class ApiExceptionHandler {
                 "message", ex.getMessage()
         );
     }
+    
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleBusiness(BusinessException ex) {
+        return Map.of(
+            "error", "Regra de negócio violada",
+            "message", ex.getMessage()
+        );
+    }
+
+    
 }
+	
