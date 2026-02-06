@@ -4,44 +4,72 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
-env:
-  JAVA_VERSION: '21'
-  AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
-
 jobs:
-  build-and-deploy:
+  build:
+    name: Build e Testes
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v4
+      - name: Checkout código
+        uses: actions/checkout@v4
 
-    - name: Configurar Java ${{ env.JAVA_VERSION }}
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: 'temurin'
-        cache: 'maven'
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
 
-    - name: Build com Maven
-      run: mvn clean package -DskipTests
+      - name: Dar permissão ao mvnw
+        run: chmod +x ./mvnw
 
-    - name: Verificar JAR gerado
-      run: ls -lh target/*.jar
+      - name: Build e Testes
+        run: ./mvnw clean package
 
-    - name: Login no Azure com Service Principal
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/SpringAula-0.0.1-SNAPSHOT.jar
+          retention-days: 1
 
-    - name: Deploy para Azure App Service
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        package: target/*.jar
+  deploy:
+    name: Deploy para Azure
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Download JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
 
-    - name: Logout do Azure
-      if: always()
-      run: az logout
+      - name: Login no Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy para Azure Web App
+        run: |
+          az webapp deploy \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --name ${{ vars.AZURE_WEBAPP_NAME }} \
+            --src-path demo-0.0.1-SNAPSHOT.jar \
+            --type jar
+
+      - name: Verificar deploy
+        run: |
+          echo "Aplicação deployada com sucesso!"
+          echo "URL da aplicação: https://${{ vars.AZURE_WEBAPP_NAME }}-c0dubph9hzhagrd9.brazilsouth-01.azurewebsites.net"
+          echo "Resource Group: ${{ vars.AZURE_RESOURCE_GROUP }}"
+          echo "Web App: ${{ vars.AZURE_WEBAPP_NAME }}"
+
+      - name: Logout do Azure
+        run: az logout
+        if: always()
